@@ -3784,6 +3784,9 @@ int main(int argc, char **argv)
         av_log(NULL, AV_LOG_FATAL, "An input file must be specified\n");
         av_log(NULL, AV_LOG_FATAL,
                "Use -h to get full help or, even better, run 'man %s'\n", program_name);
+#ifdef CONCISE_CONF
+        av_log(NULL, AV_LOG_FATAL, "\nUse -buildconf to get info about how this build of %s was compiled.\n", program_name);
+#endif
         exit(1);
     }
 

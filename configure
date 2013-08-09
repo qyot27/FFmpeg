@@ -263,6 +263,8 @@ External library support:
   --enable-libpulse        enable Pulseaudio input via libpulse [no]
   --enable-libqrencode     enable QR encode generation via libqrencode [no]
   --enable-libquirc        enable QR decoding via libquirc [no]
+  --enable-libqrencode     enable QR encode generation via libqrencode [no]
+  --enable-libquirc        enable QR decoding via libquirc [no]
   --enable-librabbitmq     enable RabbitMQ library [no]
   --enable-librav1e        enable AV1 encoding via rav1e [no]
   --enable-librist         enable RIST via librist [no]
@@ -426,6 +428,7 @@ Toolchain options:
   --enable-pic             build position-independent code
   --enable-thumb           compile for Thumb instruction set
   --enable-lto[=arg]       use link-time optimization
+  --enable-concise-version omit 'configuration:' from regular invocation
   --env="ENV=override"     override the environment variables
   --disable-response-files Don't pass the list of objects to linker in a file [autodetect]
 
@@ -2677,6 +2680,7 @@ CMDLINE_SELECT="
     rpath
     stripping
     version_tracking
+    concise_version
 "
 
 PATHS_LIST="
@@ -3631,6 +3635,8 @@ libx265_encoder_deps="libx265"
 libx265_encoder_select="atsc_a53 dovi_rpuenc"
 libxavs_encoder_deps="libxavs"
 libxavs2_encoder_deps="libxavs2"
+libxevd_decoder_deps="libxevd"
+libxeve_encoder_deps="libxeve"
 libxevd_decoder_deps="libxevd"
 libxeve_encoder_deps="libxeve"
 libxvid_encoder_deps="libxvid"
@@ -8100,6 +8106,10 @@ echo "config:$arch:$subarch:$cpu:$target_os:$(esc $cc_ident):$(esc $FFMPEG_CONFI
 
 enabled stripping || strip="echo skipping strip"
 enabled stripping || striptype=""
+
+if enabled concise_version; then
+     add_cflags -DCONCISE_CONF
+fi
 
 config_files="$TMPH ffbuild/config.mak doc/config.texi"
 

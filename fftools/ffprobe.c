@@ -3190,6 +3190,9 @@ int main(int argc, char **argv)
             show_usage();
             av_log(NULL, AV_LOG_ERROR, "You have to specify one input file.\n");
             av_log(NULL, AV_LOG_ERROR, "Use -h to get full help or, even better, run 'man %s'.\n", program_name);
+#ifdef CONCISE_CONF
+            av_log(NULL, AV_LOG_ERROR, "\nUse -buildconf to get info about how this build of %s was compiled.\n", program_name);
+#endif
             ret = AVERROR(EINVAL);
         } else if (input_filename) {
             ret = probe_file(tctx, input_filename, print_input_filename);
