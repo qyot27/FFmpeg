@@ -436,6 +436,7 @@ Toolchain options:
   --enable-pic             build position-independent code
   --enable-thumb           compile for Thumb instruction set
   --enable-lto[=arg]       use link-time optimization
+  --enable-concise-version omit 'configuration:' from regular invocation
   --env="ENV=override"     override the environment variables
   --disable-response-files Don't pass the list of objects to linker in a file [autodetect]
 
@@ -2823,6 +2824,7 @@ CMDLINE_SELECT="
     rpath
     stripping
     version_tracking
+    concise_version
 "
 
 PATHS_LIST="
@@ -8440,6 +8442,10 @@ echo "config:$arch:$subarch:$cpu:$target_os:$(esc $cc_ident):$(esc $FFMPEG_CONFI
 
 enabled stripping || striptype="nostrip"
 enabled stripping || ASMSTRIPFLAGS=""
+
+if enabled concise_version; then
+     add_cflags -DCONCISE_CONF
+fi
 
 config_files="$TMPH ffbuild/config.mak doc/config.texi"
 
