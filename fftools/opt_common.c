@@ -205,7 +205,9 @@ static void print_program_info(int flags, int level)
     av_log(NULL, level, "\n");
     av_log(NULL, level, "%sbuilt with %s\n", indent, CC_IDENT);
 
+#ifndef CONCISE_CONF
     av_log(NULL, level, "%sconfiguration: " FFMPEG_CONFIGURATION "\n", indent);
+#endif
 }
 
 static void print_buildconf(int flags, int level)
