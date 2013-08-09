@@ -406,6 +406,7 @@ Toolchain options:
   --enable-pic             build position-independent code
   --enable-thumb           compile for Thumb instruction set
   --enable-lto             use link-time optimization
+  --enable-concise-version omit 'configuration:' from regular invocation
   --env="ENV=override"     override the environment variables
 
 Advanced options (experts only):
@@ -2482,6 +2483,7 @@ CMDLINE_SELECT="
     optimizations
     rpath
     stripping
+    concise_version
 "
 
 PATHS_LIST="
@@ -7479,6 +7481,10 @@ echo "config:$arch:$subarch:$cpu:$target_os:$(esc $cc_ident):$(esc $FFMPEG_CONFI
 
 enabled stripping || strip="echo skipping strip"
 enabled stripping || striptype=""
+
+if enabled concise_version; then
+     add_cflags -DCONCISE_CONF
+fi
 
 config_files="$TMPH ffbuild/config.mak doc/config.texi"
 
