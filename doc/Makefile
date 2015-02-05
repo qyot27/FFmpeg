@@ -91,9 +91,9 @@ doc/%-all.pod: doc/%.texi $(SRC_PATH)/doc/texi2pod.pl $(GENTEXI)
 
 doc/%.1 doc/%.3: TAG = MAN
 doc/%.1: doc/%.pod $(GENTEXI)
-	$(M)pod2man --section=1 --center=" " --release=" " --date=" " $< > $@
+	$(M)pod2man --section=1 --center=" " --release=" " $< > $@
 doc/%.3: doc/%.pod $(GENTEXI)
-	$(M)pod2man --section=3 --center=" " --release=" " --date=" " $< > $@
+	$(M)pod2man --section=3 --center=" " --release=" " $< > $@
 
 $(DOCS) doc/doxy/html: | doc/
 
