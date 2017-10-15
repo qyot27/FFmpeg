@@ -6489,7 +6489,9 @@ enabled libtensorflow     && require libtensorflow tensorflow/c/c_api.h TF_Versi
 enabled libtesseract      && require_pkg_config libtesseract tesseract tesseract/capi.h TessBaseAPICreate
 enabled libtheora         && require libtheora theora/theoraenc.h th_info_init -ltheoraenc -ltheoradec -logg
 enabled libtls            && require_pkg_config libtls libtls tls.h tls_configure
-enabled libtwolame        && require libtwolame twolame.h twolame_init -ltwolame &&
+enabled libtwolame        && { check_pkg_config libtwolame "twolame >= 0.3.10" twolame.h twolame_init ||
+                               { require libtwolame twolame.h twolame_init -ltwolame &&
+                                 warn "using libtwolame without pkg-config"; } } &&
                              { check_lib libtwolame twolame.h twolame_encode_buffer_float32_interleaved -ltwolame ||
                                die "ERROR: libtwolame must be installed and version must be >= 0.3.10"; }
 enabled libuavs3d         && require_pkg_config libuavs3d "uavs3d >= 1.1.41" uavs3d.h uavs3d_decode
