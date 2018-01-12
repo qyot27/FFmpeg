@@ -5,7 +5,12 @@
 # check for git short hash
 if ! test "$revision"; then
     if (cd "$1" && grep git RELEASE 2> /dev/null >/dev/null) ; then
-        revision=$(cd "$1" && git describe --tags --match N 2> /dev/null)
+        rev_count="$(cd "$1" && git rev-list --count master)"
+        rev_count_diff="$(cd "$1" && git rev-list --no-merges --count HEAD ^master)"
+        master_hash="$(cd "$1" && git rev-parse --short master)"
+        head_hash="$(cd "$1" && git rev-parse --short HEAD)"
+        branches_included="$(cd "$1" && git branch --merged | grep -v master | sed 's/^..//g' | tr '\n' ' ')"
+        revision="r$rev_count+$rev_count_diff master-$master_hash HEAD-$head_hash\n contains: $branches_included\n"
     else
         revision=$(cd "$1" && git describe --tags --always 2> /dev/null)
     fi
@@ -46,7 +51,7 @@ if [ -z "$2" ]; then
 fi
 
 NEW_REVISION="#define FFMPEG_VERSION \"$version\""
-OLD_REVISION=$(cat "$2" 2> /dev/null | head -4 | tail -1)
+OLD_REVISION=$(cat "$2" 2> /dev/null | head -3 | tail -1)
 
 # String used for preprocessor guard
 GUARD=$(echo "$2" | sed 's/\//_/' | sed 's/\./_/' | tr '[:lower:]' '[:upper:]' | sed 's/LIB//')
