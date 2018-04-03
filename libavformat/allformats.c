@@ -576,6 +576,7 @@ extern const FFInputFormat  ff_libgme_demuxer;
 extern const FFInputFormat  ff_libmodplug_demuxer;
 extern const FFInputFormat  ff_libopenmpt_demuxer;
 extern const FFInputFormat  ff_vapoursynth_demuxer;
+extern const FFInputFormat  ff_vapoursynth_alt_demuxer;
 
 #include "libavformat/muxer_list.c"
 #include "libavformat/demuxer_list.c"
