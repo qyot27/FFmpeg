@@ -1,0 +1,2 @@
+This is a dummy file to trick git branch from displaying this on the summaries
+for normal builds.
