@@ -84,6 +84,7 @@ static av_cold int map_vsformat(AVFormatContext *s, AVStream *st,
         case 12: return AV_PIX_FMT_GBRP12;
         case 14: return AV_PIX_FMT_GBRP14;
         case 16: return AV_PIX_FMT_GBRP16;
+        case 32: return AV_PIX_FMT_GBRPF32;
         default: return AV_PIX_FMT_NONE;
         }
     case cmYUV:
