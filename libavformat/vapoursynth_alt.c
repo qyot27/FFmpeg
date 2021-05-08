@@ -193,7 +193,7 @@ static av_cold int open_script(AVFormatContext *s)
     if (ret = ff_lock_avformat())
         return ret;
 
-    if (vsscript_evaluateFile(&vs->script, s->filename, efSetWorkingDir)) {
+    if (vsscript_evaluateFile(&vs->script, s->url, efSetWorkingDir)) {
         ff_unlock_avformat();
         av_log(s, AV_LOG_ERROR, "VapourSynth script evaluation failed\n");
         return AVERROR_EXTERNAL;
