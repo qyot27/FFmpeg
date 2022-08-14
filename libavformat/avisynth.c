@@ -313,6 +313,10 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         st->codecpar->format = AV_PIX_FMT_YUVA420P10;
         planar               = 4;
         break;
+    case AVS_CS_YUVA444P12:
+        st->codecpar->format = AV_PIX_FMT_YUVA444P12;
+        planar               = 4;
+        break;
     case AVS_CS_YUVA422P12:
         st->codecpar->format = AV_PIX_FMT_YUVA422P12;
         planar               = 4;
