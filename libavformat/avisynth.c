@@ -368,6 +368,10 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         st->codecpar->format = AV_PIX_FMT_GBRAP12;
         planar               = 5;
         break;
+    case AVS_CS_RGBAP14:
+        st->codecpar->format = AV_PIX_FMT_GBRAP14;
+        planar               = 5;
+        break;
     case AVS_CS_RGBAP16:
         st->codecpar->format = AV_PIX_FMT_GBRAP16;
         planar               = 5;
