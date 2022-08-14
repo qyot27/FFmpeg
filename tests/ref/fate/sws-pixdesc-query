@@ -161,6 +161,8 @@ isNBPS:
   yuva444p10le
   yuva444p12be
   yuva444p12le
+  yuva444p14be
+  yuva444p14le
   yuva444p9be
   yuva444p9le
 
@@ -264,6 +266,7 @@ isBE:
   yuva422p9be
   yuva444p10be
   yuva444p12be
+  yuva444p14be
   yuva444p16be
   yuva444p9be
 
@@ -396,6 +399,8 @@ isYUV:
   yuva444p10le
   yuva444p12be
   yuva444p12le
+  yuva444p14be
+  yuva444p14le
   yuva444p16be
   yuva444p16le
   yuva444p9be
@@ -505,6 +510,8 @@ isPlanarYUV:
   yuva444p10le
   yuva444p12be
   yuva444p12le
+  yuva444p14be
+  yuva444p14le
   yuva444p16be
   yuva444p16le
   yuva444p9be
@@ -894,6 +901,8 @@ ALPHA:
   yuva444p10le
   yuva444p12be
   yuva444p12le
+  yuva444p14be
+  yuva444p14le
   yuva444p16be
   yuva444p16le
   yuva444p9be
@@ -1133,6 +1142,8 @@ Planar:
   yuva444p10le
   yuva444p12be
   yuva444p12le
+  yuva444p14be
+  yuva444p14le
   yuva444p16be
   yuva444p16le
   yuva444p9be
