@@ -215,6 +215,7 @@ isBE:
   yuv420p14be
   yuv420p16be
   yuv420p9be
+  yuv420pf32be
   yuv422p10be
   yuv422p12be
   yuv422p14be
@@ -310,6 +311,8 @@ isYUV:
   yuv420p16le
   yuv420p9be
   yuv420p9le
+  yuv420pf32be
+  yuv420pf32le
   yuv422p
   yuv422p10be
   yuv422p10le
@@ -417,6 +420,8 @@ isPlanarYUV:
   yuv420p16le
   yuv420p9be
   yuv420p9le
+  yuv420pf32be
+  yuv420pf32le
   yuv422p
   yuv422p10be
   yuv422p10le
@@ -995,6 +1000,8 @@ Planar:
   yuv420p16le
   yuv420p9be
   yuv420p9le
+  yuv420pf32be
+  yuv420pf32le
   yuv422p
   yuv422p10be
   yuv422p10le
