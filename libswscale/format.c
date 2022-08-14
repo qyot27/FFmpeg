@@ -290,6 +290,8 @@ static const LegacyFormatEntry legacy_format_entries[] = {
     [AV_PIX_FMT_UYVA]           = { 1, 1 },
     [AV_PIX_FMT_VYU444]         = { 1, 1 },
     [AV_PIX_FMT_V30XLE]         = { 1, 1 },
+    [AV_PIX_FMT_YUV420PF32BE]   = { 1, 1 },
+    [AV_PIX_FMT_YUV420PF32LE]   = { 1, 1 },
 };
 
 int sws_isSupportedInput(enum AVPixelFormat pix_fmt)
