@@ -475,6 +475,8 @@ enum AVPixelFormat {
      * HW acceleration through AMF. data[0] contain AMFSurface pointer
      */
     AV_PIX_FMT_AMF_SURFACE,
+    AV_PIX_FMT_YUVA420P14BE, ///< planar YUV 4:2:0,21bpp, (1 Cr & Cb sample per 2x2 Y samples), 14b alpha, big-endian
+    AV_PIX_FMT_YUVA420P14LE, ///< planar YUV 4:2:0,21bpp, (1 Cr & Cb sample per 2x2 Y samples), 14b alpha, little-endian
 
     AV_PIX_FMT_NB         ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 };
@@ -559,6 +561,7 @@ enum AVPixelFormat {
 #define AV_PIX_FMT_YUVA420P12 AV_PIX_FMT_NE(YUVA420P12BE, YUVA420P12LE)
 #define AV_PIX_FMT_YUVA422P12 AV_PIX_FMT_NE(YUVA422P12BE, YUVA422P12LE)
 #define AV_PIX_FMT_YUVA444P12 AV_PIX_FMT_NE(YUVA444P12BE, YUVA444P12LE)
+#define AV_PIX_FMT_YUVA420P14 AV_PIX_FMT_NE(YUVA420P14BE, YUVA420P14LE)
 #define AV_PIX_FMT_YUVA420P16 AV_PIX_FMT_NE(YUVA420P16BE, YUVA420P16LE)
 #define AV_PIX_FMT_YUVA422P16 AV_PIX_FMT_NE(YUVA422P16BE, YUVA422P16LE)
 #define AV_PIX_FMT_YUVA444P16 AV_PIX_FMT_NE(YUVA444P16BE, YUVA444P16LE)
