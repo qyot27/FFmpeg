@@ -1674,6 +1674,7 @@ av_cold void ff_sws_init_input_funcs(SwsInternal *c,
     case AV_PIX_FMT_YUVA422P12LE:
     case AV_PIX_FMT_YUVA444P12LE:
     case AV_PIX_FMT_YUVA420P14LE:
+    case AV_PIX_FMT_YUVA422P14LE:
     case AV_PIX_FMT_YUVA420P16LE:
     case AV_PIX_FMT_YUVA422P16LE:
     case AV_PIX_FMT_YUVA444P16LE:
@@ -1708,6 +1709,7 @@ av_cold void ff_sws_init_input_funcs(SwsInternal *c,
     case AV_PIX_FMT_YUVA422P12BE:
     case AV_PIX_FMT_YUVA444P12BE:
     case AV_PIX_FMT_YUVA420P14BE:
+    case AV_PIX_FMT_YUVA422P14BE:
     case AV_PIX_FMT_YUVA420P16BE:
     case AV_PIX_FMT_YUVA422P16BE:
     case AV_PIX_FMT_YUVA444P16BE:
@@ -2102,6 +2104,7 @@ av_cold void ff_sws_init_input_funcs(SwsInternal *c,
     case AV_PIX_FMT_YUVA422P12LE:
     case AV_PIX_FMT_YUVA444P12LE:
     case AV_PIX_FMT_YUVA420P14LE:
+    case AV_PIX_FMT_YUVA422P14LE:
     case AV_PIX_FMT_YUVA420P16LE:
     case AV_PIX_FMT_YUVA422P16LE:
     case AV_PIX_FMT_YUVA444P16LE:
@@ -2148,6 +2151,7 @@ av_cold void ff_sws_init_input_funcs(SwsInternal *c,
     case AV_PIX_FMT_YUVA422P12BE:
     case AV_PIX_FMT_YUVA444P12BE:
     case AV_PIX_FMT_YUVA420P14BE:
+    case AV_PIX_FMT_YUVA422P14BE:
     case AV_PIX_FMT_YUVA420P16BE:
     case AV_PIX_FMT_YUVA422P16BE:
     case AV_PIX_FMT_YUVA444P16BE:
