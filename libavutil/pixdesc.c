@@ -3195,6 +3195,33 @@ static const AVPixFmtDescriptor av_pix_fmt_descriptors[AV_PIX_FMT_NB] = {
         .flags = AV_PIX_FMT_FLAG_BE | AV_PIX_FMT_FLAG_PLANAR |
                  AV_PIX_FMT_FLAG_RGB | AV_PIX_FMT_FLAG_ALPHA,
     },
+    [AV_PIX_FMT_YUVA420P12LE] = {
+        .name = "yuva420p12le",
+        .nb_components = 4,
+        .log2_chroma_w = 1,
+        .log2_chroma_h = 1,
+        .comp = {
+            { 0, 2, 0, 0, 12 },        /* Y */
+            { 1, 2, 0, 0, 12 },        /* U */
+            { 2, 2, 0, 0, 12 },        /* V */
+            { 3, 2, 0, 0, 12 },        /* A */
+        },
+        .flags = AV_PIX_FMT_FLAG_PLANAR | AV_PIX_FMT_FLAG_ALPHA,
+    },
+    [AV_PIX_FMT_YUVA420P12BE] = {
+        .name = "yuva420p12be",
+        .nb_components = 4,
+        .log2_chroma_w = 1,
+        .log2_chroma_h = 1,
+        .comp = {
+            { 0, 2, 0, 0, 12 },        /* Y */
+            { 1, 2, 0, 0, 12 },        /* U */
+            { 2, 2, 0, 0, 12 },        /* V */
+            { 3, 2, 0, 0, 12 },        /* A */
+        },
+        .flags = AV_PIX_FMT_FLAG_BE | AV_PIX_FMT_FLAG_PLANAR |
+                 AV_PIX_FMT_FLAG_ALPHA,
+    },
 };
 
 static const char * const color_range_names[] = {
