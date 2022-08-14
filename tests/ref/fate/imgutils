@@ -300,6 +300,8 @@ gbrap32be       planes: 4, linesizes: 256 256 256 256, plane_sizes: 12288 12288 
 gbrap32le       planes: 4, linesizes: 256 256 256 256, plane_sizes: 12288 12288 12288 12288, plane_offsets: 12288 12288 12288, total_size: 49152
 yuva420p12be    planes: 4, linesizes: 128  64  64 128, plane_sizes:  6144  1536  1536  6144, plane_offsets:  6144  1536  1536, total_size: 15360
 yuva420p12le    planes: 4, linesizes: 128  64  64 128, plane_sizes:  6144  1536  1536  6144, plane_offsets:  6144  1536  1536, total_size: 15360
+yuva420p14be    planes: 4, linesizes: 128  64  64 128, plane_sizes:  6144  1536  1536  6144, plane_offsets:  6144  1536  1536, total_size: 15360
+yuva420p14le    planes: 4, linesizes: 128  64  64 128, plane_sizes:  6144  1536  1536  6144, plane_offsets:  6144  1536  1536, total_size: 15360
 
 image_fill_black tests
 yuv420p         total_size:   4608,  black_unknown_crc: 0xd00f6cc6,  black_tv_crc: 0xd00f6cc6,  black_pc_crc: 0x234969af
