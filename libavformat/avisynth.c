@@ -362,6 +362,11 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         st->codecpar->format = AV_PIX_FMT_YUV420PF32;
         planar               = 1;
         break;
+    /* Single precision floating point YUV pix_fmts with Alpha (AviSynth+) */
+    case AVS_CS_YUVA420PS:
+        st->codecpar->format = AV_PIX_FMT_YUVA420PF32;
+        planar               = 4;
+        break;
     /* Planar RGB pix_fmts (AviSynth+) */
     case AVS_CS_RGBP:
         st->codecpar->format = AV_PIX_FMT_GBRP;
