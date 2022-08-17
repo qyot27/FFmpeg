@@ -363,6 +363,10 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         planar               = 1;
         break;
     /* Single precision floating point YUV pix_fmts with Alpha (AviSynth+) */
+    case AVS_CS_YUVA444PS:
+        st->codecpar->format = AV_PIX_FMT_YUVA444PF32;
+        planar               = 4;
+        break;
     case AVS_CS_YUVA422PS:
         st->codecpar->format = AV_PIX_FMT_YUVA422PF32;
         planar               = 4;
