@@ -276,6 +276,8 @@ static const FormatEntry format_entries[] = {
     [AV_PIX_FMT_YUVA420PF32LE]  = { 1, 1 },
     [AV_PIX_FMT_YUVA422PF32BE]  = { 1, 1 },
     [AV_PIX_FMT_YUVA422PF32LE]  = { 1, 1 },
+    [AV_PIX_FMT_YUVA444PF32BE]  = { 1, 1 },
+    [AV_PIX_FMT_YUVA444PF32LE]  = { 1, 1 },
 };
 
 int sws_isSupportedInput(enum AVPixelFormat pix_fmt)
