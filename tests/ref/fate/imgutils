@@ -316,6 +316,8 @@ yuva420pf32le   planes: 4, linesizes: 256 128 128 256, plane_sizes: 12288  3072 
 yuva420pf32be   planes: 4, linesizes: 256 128 128 256, plane_sizes: 12288  3072  3072 12288, plane_offsets: 12288  3072  3072, total_size: 30720
 yuva422pf32le   planes: 4, linesizes: 256 128 128 256, plane_sizes: 12288  6144  6144 12288, plane_offsets: 12288  6144  6144, total_size: 36864
 yuva422pf32be   planes: 4, linesizes: 256 128 128 256, plane_sizes: 12288  6144  6144 12288, plane_offsets: 12288  6144  6144, total_size: 36864
+yuva444pf32le   planes: 4, linesizes: 256 256 256 256, plane_sizes: 12288 12288 12288 12288, plane_offsets: 12288 12288 12288, total_size: 49152
+yuva444pf32be   planes: 4, linesizes: 256 256 256 256, plane_sizes: 12288 12288 12288 12288, plane_offsets: 12288 12288 12288, total_size: 49152
 
 image_fill_black tests
 yuv420p         total_size:   4608,  black_unknown_crc: 0xd00f6cc6,  black_tv_crc: 0xd00f6cc6,  black_pc_crc: 0x234969af
