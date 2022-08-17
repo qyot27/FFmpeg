@@ -256,6 +256,7 @@ isBE:
   yuva422p14be
   yuva422p16be
   yuva422p9be
+  yuva422pf32be
   yuva444p10be
   yuva444p12be
   yuva444p14be
@@ -390,6 +391,8 @@ isYUV:
   yuva422p16le
   yuva422p9be
   yuva422p9le
+  yuva422pf32be
+  yuva422pf32le
   yuva444p
   yuva444p10be
   yuva444p10le
@@ -505,6 +508,8 @@ isPlanarYUV:
   yuva422p16le
   yuva422p9be
   yuva422p9le
+  yuva422pf32be
+  yuva422pf32le
   yuva444p
   yuva444p10be
   yuva444p10le
@@ -890,6 +895,8 @@ ALPHA:
   yuva422p16le
   yuva422p9be
   yuva422p9le
+  yuva422pf32be
+  yuva422pf32le
   yuva444p
   yuva444p10be
   yuva444p10le
@@ -1131,6 +1138,8 @@ Planar:
   yuva422p16le
   yuva422p9be
   yuva422p9le
+  yuva422pf32be
+  yuva422pf32le
   yuva444p
   yuva444p10be
   yuva444p10le
