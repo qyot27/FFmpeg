@@ -500,6 +500,9 @@ enum AVPixelFormat {
     AV_PIX_FMT_YUV420PF32LE,  ///< IEEE-754 single precision planar YUV 4:2:0, 48bpp, (1 Cr & Cb sample per 2x2 Y samples), little-endian
     AV_PIX_FMT_YUV420PF32BE,  ///< IEEE-754 single precision planar YUV 4:2:0, 48bpp, (1 Cr & Cb sample per 2x2 Y samples), big-endian
 
+    AV_PIX_FMT_YUV422PF32LE,  ///< IEEE-754 single precision planar YUV 4:2:2, 64bpp, (1 Cr & Cb sample per 2x1 Y samples), little-endian
+    AV_PIX_FMT_YUV422PF32BE,  ///< IEEE-754 single precision planar YUV 4:2:2, 64bpp, (1 Cr & Cb sample per 2x1 Y samples), big-endian
+
     AV_PIX_FMT_NB         ///< number of pixel formats, DO NOT USE THIS if you want to link with shared libav* because the number of formats might differ between versions
 };
 
@@ -629,6 +632,7 @@ enum AVPixelFormat {
 #define AV_PIX_FMT_RGBA128    AV_PIX_FMT_NE(RGBA128BE, RGBA128LE)
 
 #define AV_PIX_FMT_YUV420PF32 AV_PIX_FMT_NE(YUV420PF32BE, YUV420PF32LE)
+#define AV_PIX_FMT_YUV422PF32 AV_PIX_FMT_NE(YUV422PF32BE, YUV422PF32LE)
 
 /**
   * Chromaticity coordinates of the source primaries.
