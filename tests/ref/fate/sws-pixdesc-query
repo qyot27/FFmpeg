@@ -274,6 +274,7 @@ isBE:
   yuva444p14be
   yuva444p16be
   yuva444p9be
+  yuva444pf32be
 
 isYUV:
   ayuv
@@ -420,6 +421,8 @@ isYUV:
   yuva444p16le
   yuva444p9be
   yuva444p9le
+  yuva444pf32be
+  yuva444pf32le
   yuvj411p
   yuvj420p
   yuvj422p
@@ -541,6 +544,8 @@ isPlanarYUV:
   yuva444p16le
   yuva444p9be
   yuva444p9le
+  yuva444pf32be
+  yuva444pf32le
   yuvj411p
   yuvj420p
   yuvj422p
@@ -936,6 +941,8 @@ ALPHA:
   yuva444p16le
   yuva444p9be
   yuva444p9le
+  yuva444pf32be
+  yuva444pf32le
 
 Packed:
   0bgr
@@ -1187,6 +1194,8 @@ Planar:
   yuva444p16le
   yuva444p9be
   yuva444p9le
+  yuva444pf32be
+  yuva444pf32le
   yuvj411p
   yuvj420p
   yuvj422p
