@@ -3351,6 +3351,31 @@ static const AVPixFmtDescriptor av_pix_fmt_descriptors[AV_PIX_FMT_NB] = {
         .flags = AV_PIX_FMT_FLAG_BE | AV_PIX_FMT_FLAG_PLANAR |
                  AV_PIX_FMT_FLAG_FLOAT,
     },
+    [AV_PIX_FMT_YUV444PF32LE] = {
+        .name = "yuv444pf32le",
+        .nb_components = 3,
+        .log2_chroma_w = 0,
+        .log2_chroma_h = 0,
+        .comp = {
+            { 0, 4, 0, 0, 32 },        /* Y */
+            { 1, 4, 0, 0, 32 },        /* U */
+            { 2, 4, 0, 0, 32 },        /* V */
+        },
+        .flags = AV_PIX_FMT_FLAG_PLANAR | AV_PIX_FMT_FLAG_FLOAT,
+    },
+    [AV_PIX_FMT_YUV444PF32BE] = {
+        .name = "yuv444pf32be",
+        .nb_components = 3,
+        .log2_chroma_w = 0,
+        .log2_chroma_h = 0,
+        .comp = {
+            { 0, 4, 0, 0, 32 },        /* Y */
+            { 1, 4, 0, 0, 32 },        /* U */
+            { 2, 4, 0, 0, 32 },        /* V */
+        },
+        .flags = AV_PIX_FMT_FLAG_BE | AV_PIX_FMT_FLAG_PLANAR |
+                 AV_PIX_FMT_FLAG_FLOAT,
+    },
 };
 
 static const char * const color_range_names[] = {
