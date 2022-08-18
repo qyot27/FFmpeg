@@ -179,6 +179,8 @@ static const PixelFormatTag raw_pix_fmt_tags[] = {
     { AV_PIX_FMT_YUVA422P10BE,    MKTAG(10 , 10 , '4', 'Y') },
     { AV_PIX_FMT_YUVA444P10LE,    MKTAG('Y', '4',  0 , 10 ) },
     { AV_PIX_FMT_YUVA444P10BE,    MKTAG(10 ,  0 , '4', 'Y') },
+    { AV_PIX_FMT_YUVA420P12LE,    MKTAG('Y', '4', 11 , 12 ) },
+    { AV_PIX_FMT_YUVA420P12BE,    MKTAG(12 , 11 , '4', 'Y') },
     { AV_PIX_FMT_YUVA422P12LE,    MKTAG('Y', '4', 10 , 12 ) },
     { AV_PIX_FMT_YUVA422P12BE,    MKTAG(12 , 10 , '4', 'Y') },
     { AV_PIX_FMT_YUVA444P12LE,    MKTAG('Y', '4',  0 , 12 ) },
