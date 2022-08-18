@@ -151,6 +151,8 @@ const AVCodecTag ff_nut_video_tags[] = {
     { AV_CODEC_ID_RAWVIDEO,         MKTAG(12,    0, '4', 'Y') },
     { AV_CODEC_ID_RAWVIDEO,         MKTAG('Y', '4',  10,  12) },
     { AV_CODEC_ID_RAWVIDEO,         MKTAG(12,   10, '4', 'Y') },
+    { AV_CODEC_ID_RAWVIDEO,         MKTAG('Y', '4',  11,  12) },
+    { AV_CODEC_ID_RAWVIDEO,         MKTAG(12,   11, '4', 'Y') },
 
     { AV_CODEC_ID_RAWVIDEO,         MKTAG('Y', '1',   0,  12) },
     { AV_CODEC_ID_RAWVIDEO,         MKTAG(12,    0, '1', 'Y') },
