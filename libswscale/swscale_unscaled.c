@@ -2415,7 +2415,7 @@ void ff_get_unscaled_swscale(SwsInternal *c)
     /* yuv420p1x_to_p01x */
     if ((srcFormat == AV_PIX_FMT_YUV420P10 || srcFormat == AV_PIX_FMT_YUVA420P10 ||
          srcFormat == AV_PIX_FMT_YUV420P12 || srcFormat == AV_PIX_FMT_YUVA420P12 ||
-         srcFormat == AV_PIX_FMT_YUV420P14 ||
+         srcFormat == AV_PIX_FMT_YUV420P14 || srcFormat == AV_PIX_FMT_YUVA420P14 ||
          srcFormat == AV_PIX_FMT_YUV420P16 || srcFormat == AV_PIX_FMT_YUVA420P16) &&
         (dstFormat == AV_PIX_FMT_P010 || dstFormat == AV_PIX_FMT_P016)) {
         c->convert_unscaled = planarToP01xWrapper;
