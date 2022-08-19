@@ -238,6 +238,9 @@ static const PixelFormatTag raw_pix_fmt_tags[] = {
     { AV_PIX_FMT_YUV444PF32LE,    MKTAG('Y', '3',  0 , 33 ) },
     { AV_PIX_FMT_YUV444PF32BE,    MKTAG(33 ,  0 , '3', 'Y') },
 
+    { AV_PIX_FMT_YUVA420PF32LE,    MKTAG('Y', '4', 11 , 33 ) },
+    { AV_PIX_FMT_YUVA420PF32BE,    MKTAG(33 , 11 , '4', 'Y') },
+
     { AV_PIX_FMT_XYZ12LE,         MKTAG('X', 'Y', 'Z' , 36 ) },
     { AV_PIX_FMT_XYZ12BE,         MKTAG(36 , 'Z' , 'Y', 'X') },
 
