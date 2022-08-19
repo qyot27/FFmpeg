@@ -228,6 +228,9 @@ static const PixelFormatTag raw_pix_fmt_tags[] = {
     { AV_PIX_FMT_GBRAPF32LE,      MKTAG('G', '4', 00 , 33 ) },
     { AV_PIX_FMT_GBRAPF32BE,      MKTAG(33 , 00 , '4', 'G') },
 
+    { AV_PIX_FMT_GRAYF32LE,       MKTAG('Y', '1',  0 , 33 ) },
+    { AV_PIX_FMT_GRAYF32BE,       MKTAG(33 ,  0 , '1', 'Y') },
+
     { AV_PIX_FMT_XYZ12LE,         MKTAG('X', 'Y', 'Z' , 36 ) },
     { AV_PIX_FMT_XYZ12BE,         MKTAG(36 , 'Z' , 'Y', 'X') },
 
