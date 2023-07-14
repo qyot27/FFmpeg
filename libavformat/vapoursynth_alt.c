@@ -42,7 +42,7 @@ typedef struct VapourSynthContext {
     const VSVideoInfo *vi;
     int curr_frame;
     int ncpu;
-    int async_pending;
+    _Atomic int async_pending;
 } VapourSynthContext;
 
 static void VS_CC async_callback(void *user_data, const VSFrameRef *f, int n,
