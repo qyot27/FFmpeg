@@ -29,6 +29,7 @@
 #include "libavcodec/internal.h"
 
 #include "avformat.h"
+#include "demux.h"
 #include "internal.h"
 #include "config.h"
 
@@ -36,6 +37,7 @@
 #include <vapoursynth/VSHelper.h>
 
 typedef struct VapourSynthContext {
+    const AVClass *class;
     const VSAPI *vsapi;
     VSScript *script;
     VSNodeRef *node;
@@ -367,9 +369,10 @@ static const AVClass class_vs = {
     .version    = LIBAVUTIL_VERSION_INT,
 };
 
-AVInputFormat ff_vapoursynth_alt_demuxer = {
-    .name           = "vapoursynth_alt",
-    .long_name      = NULL_IF_CONFIG_SMALL("VapourSynth demuxer"),
+const FFInputFormat ff_vapoursynth_alt_demuxer = {
+    .p.name         = "vapoursynth_alt",
+    .p.long_name    = NULL_IF_CONFIG_SMALL("VapourSynth demuxer"),
+    .p.priv_class   = &class_vs,
     .priv_data_size = sizeof(VapourSynthContext),
     .read_header    = read_header,
     .read_packet    = read_packet,
