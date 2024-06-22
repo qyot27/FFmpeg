@@ -25,6 +25,7 @@
 #include "libavutil/cpu.h"
 #include "libavutil/internal.h"
 #include "libavutil/time.h"
+#include "libavutil/thread.h"
 
 #include "libavcodec/internal.h"
 
@@ -46,6 +47,8 @@ typedef struct VapourSynthContext {
     int ncpu;
     _Atomic int async_pending;
 } VapourSynthContext;
+
+static AVMutex vapoursynth_mutex = AV_MUTEX_INITIALIZER;
 
 static void VS_CC async_callback(void *user_data, const VSFrameRef *f, int n,
                                  VSNodeRef *node, const char *error_msg)
@@ -192,16 +195,16 @@ static av_cold int open_script(AVFormatContext *s)
 
     // Locking is required, because vsscript_evaluateScript changes the
     // process directory internally.
-    if (ret = ff_lock_avformat())
-        return ret;
+    if (ff_mutex_lock(&vapoursynth_mutex))
+        return AVERROR_UNKNOWN;
 
     if (vsscript_evaluateFile(&vs->script, s->url, efSetWorkingDir)) {
-        ff_unlock_avformat();
+        ff_mutex_unlock(&vapoursynth_mutex);
         av_log(s, AV_LOG_ERROR, "VapourSynth script evaluation failed\n");
         return AVERROR_EXTERNAL;
     }
 
-    ff_unlock_avformat();
+    ff_mutex_unlock(&vapoursynth_mutex);
 
     if (!(vs->node = vsscript_getOutput(vs->script, 0))) {
         av_log(s, AV_LOG_ERROR, "script has no output node\n");
