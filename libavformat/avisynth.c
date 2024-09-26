@@ -53,6 +53,7 @@
 #endif
 
 #include <avisynth/avisynth_c.h>
+#include <stdbool.h>
 
 typedef struct AviSynthLibrary {
     void *library;
@@ -96,6 +97,7 @@ typedef enum AviSynthFlags {
     AVISYNTH_FRAMEPROP_MATRIX = (1 << 4),
     AVISYNTH_FRAMEPROP_CHROMA_LOCATION = (1 << 5),
     AVISYNTH_FRAMEPROP_SAR = (1 << 6),
+    AVISYNTH_FRAMEPROP_VFR = (1 << 7),
 } AviSynthFlags;
 
 typedef struct AviSynthContext {
@@ -115,6 +117,15 @@ typedef struct AviSynthContext {
     int error;
 
     uint32_t flags;
+    bool is_vfr;
+    int scaled_durnum;
+    int scaled_durden;
+
+    int curr_duration;
+    int total_duration;
+    int curr_fpsnum;
+    int curr_fpsden;
+
     struct AviSynthLibrary avs_library;
 } AviSynthContext;
 
@@ -229,13 +240,6 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
     st->codecpar->codec_id   = AV_CODEC_ID_RAWVIDEO;
     st->codecpar->width      = avs->vi->width;
     st->codecpar->height     = avs->vi->height;
-
-    st->avg_frame_rate    = (AVRational) { avs->vi->fps_numerator,
-                                           avs->vi->fps_denominator };
-    st->start_time        = 0;
-    st->duration          = avs->vi->num_frames;
-    st->nb_frames         = avs->vi->num_frames;
-    avpriv_set_pts_info(st, 32, avs->vi->fps_denominator, avs->vi->fps_numerator);
 
 
     switch (avs->vi->pixel_type) {
@@ -721,6 +725,21 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
             st->sample_aspect_ratio = (AVRational){ sar_num, sar_den };
         }
 
+        /* Variable frame rate */
+        if(avs->flags & AVISYNTH_FRAMEPROP_VFR) {
+            if((avs->avs_library.avs_prop_get_type(avs->env, avsmap, "_DurationDen") == AVS_PROPTYPE_UNSET) ||
+               (avs->avs_library.avs_prop_get_type(avs->env, avsmap, "_DurationNum") == AVS_PROPTYPE_UNSET)) {
+                avs->is_vfr = false;
+                avpriv_set_pts_info(st, 32, avs->vi->fps_denominator, avs->vi->fps_numerator);
+            } else {
+                avs->is_vfr = true;
+                avpriv_set_pts_info(st, 64, 1, 1000);
+            }
+        } else {
+            avs->is_vfr = false;
+            avpriv_set_pts_info(st, 32, avs->vi->fps_denominator, avs->vi->fps_numerator);
+        }
+
         avs->avs_library.avs_release_video_frame(frame);
     } else {
         st->codecpar->field_order = AV_FIELD_UNKNOWN;
@@ -735,6 +754,16 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
                 st->codecpar->field_order = AV_FIELD_BB;
             }
         }
+    }
+
+    if (avs->is_vfr == false) {
+        st->avg_frame_rate    = (AVRational) { avs->vi->fps_numerator,
+                                               avs->vi->fps_denominator };
+        st->start_time        = 0;
+        st->duration          = avs->vi->num_frames;
+        st->nb_frames         = avs->vi->num_frames;
+    } else {
+        st->start_time        = AV_NOPTS_VALUE;
     }
 
     return 0;
@@ -904,7 +933,9 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
     unsigned char *dst_p;
     const unsigned char *src_p;
     int n, i, plane, rowsize, planeheight, pitch, bits, ret;
+    float scaledur;
     const char *error;
+    AVRational dur;
 
     if (avs->curr_frame >= avs->vi->num_frames)
         return AVERROR_EOF;
@@ -926,12 +957,48 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
     if ((ret = av_new_packet(pkt, pkt->size)) < 0)
         return ret;
 
-    pkt->pts      = n;
-    pkt->dts      = n;
-    pkt->duration = 1;
-    pkt->stream_index = avs->curr_stream;
-
     frame = avs->avs_library.avs_get_frame(avs->clip, n);
+
+    if (avs->avs_library.avs_get_version(avs->clip) >= 9) {
+        const AVS_Map *avsmap;
+
+        avsmap = avs->avs_library.avs_get_frame_props_ro(avs->env, frame);
+
+        /* Variable frame rate */
+        if (avs->is_vfr == true) {
+            dur.num = avs->avs_library.avs_prop_get_int(avs->env, avsmap, "_DurationNum", 0, &avs->error);
+            dur.den = avs->avs_library.avs_prop_get_int(avs->env, avsmap, "_DurationDen", 0, &avs->error);
+
+            if (dur.den < 1000) {
+                // _Duration[Num/Den] uses simplified numbers rather than always using 1000 as the denominator
+                scaledur = 1000 / dur.den;
+                avs->scaled_durnum = dur.num * scaledur;
+                avs->scaled_durden = dur.den * scaledur;
+            } else {
+                avs->scaled_durnum = dur.num;
+                avs->scaled_durden = dur.den;
+            }
+
+            avs->curr_fpsnum = (dur.den * 1000) / dur.num;
+            avs->curr_fpsden = 1000;
+        }
+
+        avs->curr_duration = avs->scaled_durden * avs->scaled_durnum / 1000;
+        avs->total_duration += avs->curr_duration;
+    }
+
+    if (avs->is_vfr == false) {
+        pkt->pts      = n;
+        pkt->dts      = n;
+        pkt->duration = 1;
+        pkt->stream_index = avs->curr_stream;
+    } else {
+        pkt->pts = avs->total_duration;
+        pkt->dts = avs->total_duration - avs->curr_duration;
+        pkt->duration = avs->curr_duration;
+        pkt->stream_index = avs->curr_stream;
+    }
+
     error = avs->avs_library.avs_clip_get_error(avs->clip);
     if (error) {
         av_log(s, AV_LOG_ERROR, "%s\n", error);
@@ -1126,7 +1193,8 @@ static int avisynth_read_seek(AVFormatContext *s, int stream_index,
 
 #define AVISYNTH_FRAMEPROP_DEFAULT AVISYNTH_FRAMEPROP_FIELD_ORDER | AVISYNTH_FRAMEPROP_RANGE | \
                                    AVISYNTH_FRAMEPROP_PRIMARIES | AVISYNTH_FRAMEPROP_TRANSFER | \
-                                   AVISYNTH_FRAMEPROP_MATRIX | AVISYNTH_FRAMEPROP_CHROMA_LOCATION
+                                   AVISYNTH_FRAMEPROP_MATRIX | AVISYNTH_FRAMEPROP_CHROMA_LOCATION | \
+                                   AVISYNTH_FRAMEPROP_VFR
 #define OFFSET(x) offsetof(AviSynthContext, x)
 static const AVOption avisynth_options[] = {
     { "avisynth_flags", "set flags related to reading frame properties from script (AviSynth+ v3.7.1 or higher)", OFFSET(flags), AV_OPT_TYPE_FLAGS, {.i64 = AVISYNTH_FRAMEPROP_DEFAULT}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
@@ -1137,6 +1205,7 @@ static const AVOption avisynth_options[] = {
     { "matrix", "read matrix coefficients", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_MATRIX}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { "chroma_location", "read chroma location", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_CHROMA_LOCATION}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { "sar", "read sample aspect ratio", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_SAR}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
+    { "vfr", "read fps per-frame", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_VFR}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { NULL },
 };
 
