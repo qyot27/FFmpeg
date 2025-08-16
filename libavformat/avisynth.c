@@ -20,6 +20,8 @@
  */
 
 #include "libavutil/attributes.h"
+#include "libavutil/dovi_meta.h"
+#include "libavutil/frame.h"
 #include "libavutil/internal.h"
 #include "libavutil/mem.h"
 #include "libavutil/opt.h"
@@ -85,6 +87,7 @@ typedef struct AviSynthLibrary {
     AVSC_DECLARE_FUNC(avs_prop_get_int);
     AVSC_DECLARE_FUNC(avs_prop_get_type);
     AVSC_DECLARE_FUNC(avs_get_env_property);
+    AVSC_DECLARE_FUNC(avs_prop_get_data);
 #undef AVSC_DECLARE_FUNC
 } AviSynthLibrary;
 
@@ -96,6 +99,7 @@ typedef enum AviSynthFlags {
     AVISYNTH_FRAMEPROP_MATRIX = (1 << 4),
     AVISYNTH_FRAMEPROP_CHROMA_LOCATION = (1 << 5),
     AVISYNTH_FRAMEPROP_SAR = (1 << 6),
+    AVISYNTH_FRAMEPROP_DOLBY_VISION = (1 << 7)
 } AviSynthFlags;
 
 typedef struct AviSynthContext {
@@ -158,6 +162,7 @@ static av_cold int avisynth_load_library(AviSynthContext *avs)
     LOAD_AVS_FUNC(avs_prop_get_int, 1);
     LOAD_AVS_FUNC(avs_prop_get_type, 1);
     LOAD_AVS_FUNC(avs_get_env_property, 1);
+    LOAD_AVS_FUNC(avs_prop_get_data, 1);
 #undef LOAD_AVS_FUNC
 
     return 0;
@@ -905,6 +910,7 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
     const unsigned char *src_p;
     int n, i, plane, rowsize, planeheight, pitch, bits, ret;
     const char *error;
+    AVFrame *avframe;
 
     if (avs->curr_frame >= avs->vi->num_frames)
         return AVERROR_EOF;
@@ -960,6 +966,21 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
         avs->avs_library.avs_bit_blt(avs->env, dst_p, rowsize, src_p, pitch,
                                      rowsize, planeheight);
         dst_p += rowsize * planeheight;
+    }
+
+    if (avs->avs_library.avs_get_version(avs->clip) >= 9) {
+        const AVS_Map *avsmap;
+        AVBufferRef *dovi;
+
+        avsmap = avs->avs_library.avs_get_frame_props_ro(avs->env, frame);
+
+        /* Dolby Vision */
+        if (avs->flags & AVISYNTH_FRAMEPROP_DOLBY_VISION) {
+            if (avs->avs_library.avs_prop_get_type(avs->env, avsmap, "DolbyVisionRPU") == AVS_GETPROPERROR_SUCCESS) {
+                dovi = (AVBufferRef *)avs->avs_library.avs_prop_get_data(avs->env, avsmap, "DolbyVisionRPU", 0, &avs->error);
+                av_frame_new_side_data_from_buf(avframe, AV_FRAME_DATA_DOVI_RPU_BUFFER, dovi);
+            }
+        }
     }
 
     avs->avs_library.avs_release_video_frame(frame);
@@ -1126,7 +1147,8 @@ static int avisynth_read_seek(AVFormatContext *s, int stream_index,
 
 #define AVISYNTH_FRAMEPROP_DEFAULT AVISYNTH_FRAMEPROP_FIELD_ORDER | AVISYNTH_FRAMEPROP_RANGE | \
                                    AVISYNTH_FRAMEPROP_PRIMARIES | AVISYNTH_FRAMEPROP_TRANSFER | \
-                                   AVISYNTH_FRAMEPROP_MATRIX | AVISYNTH_FRAMEPROP_CHROMA_LOCATION
+                                   AVISYNTH_FRAMEPROP_MATRIX | AVISYNTH_FRAMEPROP_CHROMA_LOCATION | \
+                                   AVISYNTH_FRAMEPROP_DOLBY_VISION
 #define OFFSET(x) offsetof(AviSynthContext, x)
 static const AVOption avisynth_options[] = {
     { "avisynth_flags", "set flags related to reading frame properties from script (AviSynth+ v3.7.1 or higher)", OFFSET(flags), AV_OPT_TYPE_FLAGS, {.i64 = AVISYNTH_FRAMEPROP_DEFAULT}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
@@ -1137,6 +1159,7 @@ static const AVOption avisynth_options[] = {
     { "matrix", "read matrix coefficients", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_MATRIX}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { "chroma_location", "read chroma location", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_CHROMA_LOCATION}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { "sar", "read sample aspect ratio", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_SAR}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
+    { "dolby_vision", "read Dolby Vision metadata", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_DOLBY_VISION}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { NULL },
 };
 
