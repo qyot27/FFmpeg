@@ -27,6 +27,8 @@
 #include "libavutil/opt.h"
 #include "libavutil/thread.h"
 
+#include "libavcodec/dovi_rpu.h"
+
 #include "avformat.h"
 #include "demux.h"
 #include "internal.h"
@@ -115,6 +117,8 @@ typedef struct AviSynthContext {
     int curr_stream;
     int curr_frame;
     int64_t curr_sample;
+
+    DOVIContext dovi_ctx;
 
     int error;
 
@@ -910,7 +914,6 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
     const unsigned char *src_p;
     int n, i, plane, rowsize, planeheight, pitch, bits, ret;
     const char *error;
-    AVFrame *avframe;
 
     if (avs->curr_frame >= avs->vi->num_frames)
         return AVERROR_EOF;
@@ -970,15 +973,18 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
 
     if (avs->avs_library.avs_get_version(avs->clip) >= 9) {
         const AVS_Map *avsmap;
-        AVBufferRef *dovi;
+        const uint8_t *dovi;
+        AVFrame *avframe;
 
         avsmap = avs->avs_library.avs_get_frame_props_ro(avs->env, frame);
 
         /* Dolby Vision */
         if (avs->flags & AVISYNTH_FRAMEPROP_DOLBY_VISION) {
-            if (avs->avs_library.avs_prop_get_type(avs->env, avsmap, "DolbyVisionRPU") == AVS_GETPROPERROR_SUCCESS) {
-                dovi = (AVBufferRef *)avs->avs_library.avs_prop_get_data(avs->env, avsmap, "DolbyVisionRPU", 0, &avs->error);
-                av_frame_new_side_data_from_buf(avframe, AV_FRAME_DATA_DOVI_RPU_BUFFER, dovi);
+            if (!(avs->avs_library.avs_prop_get_type(avs->env, avsmap, "DolbyVisionRPU") == AVS_PROPTYPE_UNSET)) {
+                dovi = avs->avs_library.avs_prop_get_data(avs->env, avsmap, "DolbyVisionRPU", 0, &avs->error);
+
+                ff_dovi_rpu_parse(&avs->dovi_ctx, dovi, sizeof(dovi), 0);
+                ff_dovi_attach_side_data(&avs->dovi_ctx, avframe);
             }
         }
     }
