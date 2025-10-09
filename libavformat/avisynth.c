@@ -22,6 +22,7 @@
 #include "libavutil/attributes.h"
 #include "libavutil/dovi_meta.h"
 #include "libavutil/frame.h"
+#include "libavutil/hdr_dynamic_metadata.h"
 #include "libavutil/internal.h"
 #include "libavutil/mem.h"
 #include "libavutil/opt.h"
@@ -101,7 +102,8 @@ typedef enum AviSynthFlags {
     AVISYNTH_FRAMEPROP_MATRIX = (1 << 4),
     AVISYNTH_FRAMEPROP_CHROMA_LOCATION = (1 << 5),
     AVISYNTH_FRAMEPROP_SAR = (1 << 6),
-    AVISYNTH_FRAMEPROP_DOLBY_VISION = (1 << 7)
+    AVISYNTH_FRAMEPROP_DOLBY_VISION = (1 << 7),
+    AVISYNTH_FRAMEPROP_HDR10PLUS = (1 << 8)
 } AviSynthFlags;
 
 typedef struct AviSynthContext {
@@ -914,6 +916,8 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
     const unsigned char *src_p;
     int n, i, plane, rowsize, planeheight, pitch, bits, ret;
     const char *error;
+    AVFrame *avframe;
+    AVStream *st;
 
     if (avs->curr_frame >= avs->vi->num_frames)
         return AVERROR_EOF;
@@ -973,8 +977,11 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
 
     if (avs->avs_library.avs_get_version(avs->clip) >= 9) {
         const AVS_Map *avsmap;
-        const uint8_t *dovi;
-        AVFrame *avframe;
+        uint8_t *dovi, *hdr10data;
+        size_t dovibuffer, *hdr10buffer;
+        AVDynamicHDRPlus *hdr10plus;
+        AVDOVIMetadata dovi_data, *dovidata;
+        uint8_t *dovidata2;
 
         avsmap = avs->avs_library.avs_get_frame_props_ro(avs->env, frame);
 
@@ -983,8 +990,27 @@ static int avisynth_read_packet_video(AVFormatContext *s, AVPacket *pkt,
             if (!(avs->avs_library.avs_prop_get_type(avs->env, avsmap, "DolbyVisionRPU") == AVS_PROPTYPE_UNSET)) {
                 dovi = avs->avs_library.avs_prop_get_data(avs->env, avsmap, "DolbyVisionRPU", 0, &avs->error);
 
-                ff_dovi_rpu_parse(&avs->dovi_ctx, dovi, sizeof(dovi), 0);
+                ff_dovi_rpu_parse(&avs->dovi_ctx, dovi, dovibuffer, 0); // working w/o validation errors
+                av_dovi_alloc(&dovibuffer);
+//                ff_dovi_rpu_parse(&avs->dovi_ctx, dovi, sizeof(dovi), 0);
+//                ff_dovi_get_metadata(&avs->dovi_ctx, &dovidata);
                 ff_dovi_attach_side_data(&avs->dovi_ctx, avframe);
+
+//                dovidata2 = av_malloc(dovibuffer);
+//                av_packet_new_side_data(pkt, AV_PKT_DATA_DOVI_CONF, dovibuffer);
+//                av_packet_add_side_data(pkt, AV_PKT_DATA_DOVI_CONF, dovidata2, dovibuffer);
+//                av_frame_unref(avframe);
+            }
+        }
+
+        /* HDR10Plus */
+        if (avs->flags & AVISYNTH_FRAMEPROP_HDR10PLUS) {
+            if (!(avs->avs_library.avs_prop_get_type(avs->env, avsmap, "HDR10Plus") == AVS_PROPTYPE_UNSET)) {
+                hdr10data = avs->avs_library.avs_prop_get_data(avs->env, avsmap, "HDR10Plus", 0, &avs->error);
+
+                av_dynamic_hdr_plus_alloc(hdr10buffer);
+                av_dynamic_hdr_plus_create_side_data(avframe);
+                av_dynamic_hdr_plus_to_t35(hdr10plus, (uint8_t **)&hdr10data, hdr10buffer);
             }
         }
     }
@@ -1154,7 +1180,7 @@ static int avisynth_read_seek(AVFormatContext *s, int stream_index,
 #define AVISYNTH_FRAMEPROP_DEFAULT AVISYNTH_FRAMEPROP_FIELD_ORDER | AVISYNTH_FRAMEPROP_RANGE | \
                                    AVISYNTH_FRAMEPROP_PRIMARIES | AVISYNTH_FRAMEPROP_TRANSFER | \
                                    AVISYNTH_FRAMEPROP_MATRIX | AVISYNTH_FRAMEPROP_CHROMA_LOCATION | \
-                                   AVISYNTH_FRAMEPROP_DOLBY_VISION
+                                   AVISYNTH_FRAMEPROP_DOLBY_VISION | AVISYNTH_FRAMEPROP_HDR10PLUS
 #define OFFSET(x) offsetof(AviSynthContext, x)
 static const AVOption avisynth_options[] = {
     { "avisynth_flags", "set flags related to reading frame properties from script (AviSynth+ v3.7.1 or higher)", OFFSET(flags), AV_OPT_TYPE_FLAGS, {.i64 = AVISYNTH_FRAMEPROP_DEFAULT}, 0, INT_MAX, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
@@ -1166,6 +1192,7 @@ static const AVOption avisynth_options[] = {
     { "chroma_location", "read chroma location", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_CHROMA_LOCATION}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { "sar", "read sample aspect ratio", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_SAR}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { "dolby_vision", "read Dolby Vision metadata", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_DOLBY_VISION}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
+    { "hdr10plus", "read HDR10+ metadata", 0, AV_OPT_TYPE_CONST, {.i64 = AVISYNTH_FRAMEPROP_HDR10PLUS}, 0, 1, AV_OPT_FLAG_DECODING_PARAM, .unit = "flags" },
     { NULL },
 };
 
