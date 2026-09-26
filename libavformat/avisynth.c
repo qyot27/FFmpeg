@@ -239,9 +239,21 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
 
 
     switch (avs->vi->pixel_type) {
-    /* 10~16-bit YUV pix_fmts (AviSynth+) */
+    /* 8~16-bit YUV pix_fmts (AviSynth+) */
+    case AVS_CS_YUV440:
+        st->codecpar->format = AV_PIX_FMT_YUV440P;
+        planar               = 1;
+        break;
+    case AVS_CS_YUV410:
+        st->codecpar->format = AV_PIX_FMT_YUV410P;
+        planar               = 1;
+        break;
     case AVS_CS_YUV444P10:
         st->codecpar->format = AV_PIX_FMT_YUV444P10;
+        planar               = 1;
+        break;
+    case AVS_CS_YUV440P10:
+        st->codecpar->format = AV_PIX_FMT_YUV440P10;
         planar               = 1;
         break;
     case AVS_CS_YUV422P10:
@@ -254,6 +266,10 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         break;
     case AVS_CS_YUV444P12:
         st->codecpar->format = AV_PIX_FMT_YUV444P12;
+        planar               = 1;
+        break;
+    case AVS_CS_YUV440P12:
+        st->codecpar->format = AV_PIX_FMT_YUV440P12;
         planar               = 1;
         break;
     case AVS_CS_YUV422P12:
@@ -311,6 +327,10 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         break;
     case AVS_CS_YUVA420P10:
         st->codecpar->format = AV_PIX_FMT_YUVA420P10;
+        planar               = 4;
+        break;
+    case AVS_CS_YUVA444P12:
+        st->codecpar->format = AV_PIX_FMT_YUVA444P12;
         planar               = 4;
         break;
     case AVS_CS_YUVA422P12:
