@@ -210,7 +210,7 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
     const AVS_Map *avsmap;
     AVS_VideoFrame *frame;
     int error;
-    int planar = 0; // 0: packed, 1: YUV, 2: Y8, 3: Planar RGB, 4: YUVA, 5: Planar RGBA
+    int planar = 0; // 0: packed, 1: YUV, 2: Y8, 3: Planar RGB, 4: YUVA, 5: Planar RGBA, 6: Y + Alpha
     int sar_num = 1;
     int sar_den = 1;
 
@@ -224,6 +224,7 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
                                               AVS_PLANAR_V, AVS_PLANAR_A };
     static const int avs_planes_rgba[4]   = { AVS_PLANAR_G, AVS_PLANAR_B,
                                               AVS_PLANAR_R, AVS_PLANAR_A };
+    static const int avs_planes_ya[2]     = { AVS_PLANAR_Y, AVS_PLANAR_A };
 
     st->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
     st->codecpar->codec_id   = AV_CODEC_ID_RAWVIDEO;
@@ -419,6 +420,19 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
         st->codecpar->format = AV_PIX_FMT_GRAYF32;
         planar               = 2;
         break;
+    case AVS_CS_YAS:
+        st->codecpar->format = AV_PIX_FMT_YAF32;
+        planar               = 6;
+        break;
+    /* 8~16-bit Y + alpha (AviSynth+) */
+    case AVS_CS_YA16:
+        st->codecpar->format = AV_PIX_FMT_YA16;
+        planar               = 6;
+        break;
+    case AVS_CS_YA8:
+        st->codecpar->format = AV_PIX_FMT_YA8;
+        planar               = 6;
+        break;
     /* pix_fmts added in AviSynth 2.6 */
     case AVS_CS_YV24:
         st->codecpar->format = AV_PIX_FMT_YUV444P;
@@ -469,6 +483,10 @@ static int avisynth_create_stream_video(AVFormatContext *s, AVStream *st)
     }
 
     switch (planar) {
+    case 6: // Y + Alpha
+        avs->n_planes = 2;
+        avs->planes   = avs_planes_ya;
+        break;
     case 5: // Planar RGB + Alpha
         avs->n_planes = 4;
         avs->planes   = avs_planes_rgba;
